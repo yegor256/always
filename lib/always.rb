@@ -44,7 +44,7 @@ require 'concurrent/atom'
 # License:: MIT
 class Always
   # The version of the framework.
-  VERSION = '0.0.0'
+  VERSION = '0.0.3'
 
   # Constructor.
   # @param [Integer] total The number of threads to run
