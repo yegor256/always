@@ -27,3 +27,6 @@ AllCops:
   TargetRubyVersion: 3.2
   SuggestExtensions: false
   NewCops: enable
+
+Layout/EndOfLine:
+  EnforcedStyle: lf
