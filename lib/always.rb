@@ -47,6 +47,8 @@ class Always
   # Constructor.
   # @param [Integer] total The number of threads to run
   def initialize(total)
+    raise "The number of threads (#{total}) must be positive" unless total.positive?
+
     @total = total
     @on_error = nil
     @threads = []
