@@ -83,16 +83,22 @@ class Always
 
     (0..@total - 1).each do |i|
       @threads[i] = Thread.new do
-        body(i, pause, &)
-        @cycles.swap { |c| c + 1 }
+        body(pause, &)
       end
     end
   end
 
   # Stop them all.
   def stop
-    @threads.each(&:terminate)
-    @threads = []
+    raise 'It is not running now, call .start() first' if @threads.empty?
+
+    @threads.delete_if do |t|
+      t.kill
+      sleep(0.001) while t.alive?
+      true
+    end
+    @cycles.swap { |_| 0 }
+    @errors.swap { |_| 0 }
   end
 
   # Represent its internal state as a string.
@@ -106,20 +112,25 @@ class Always
   private
 
   # rubocop:disable Lint/RescueException
-  def body(idx, pause)
+  def body(pause, &)
     loop do
-      begin
-        yield
-      rescue Exception => e
-        @errors.swap { |c| c + 1 }
-        @on_error&.call(e, idx)
-      end
-      sleep(pause)
+      one(&)
+      @cycles.swap { |c| c + 1 }
+      sleep(pause) unless pause.zero?
     rescue Exception
       # If we reach this point, we must not even try to
       # do anything. Here we must quietly ignore everything
       # and let the daemon go to the next cycle.
     end
+  end
+  # rubocop:enable Lint/RescueException
+
+  # rubocop:disable Lint/RescueException
+  def one
+    yield
+  rescue Exception => e
+    @errors.swap { |c| c + 1 }
+    @on_error&.call(e)
   end
   # rubocop:enable Lint/RescueException
 end

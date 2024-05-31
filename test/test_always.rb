@@ -39,7 +39,7 @@ class TestAlways < Minitest::Test
   def test_with_error
     a = Always.new(5)
     failures = 0
-    a.on_error { |_e, i| failures += i }.start do
+    a.on_error { |_e| failures += 1 }.start do
       raise 'intentionally'
     end
     sleep(0.1)
@@ -48,12 +48,23 @@ class TestAlways < Minitest::Test
   end
 
   def test_converts_to_string
-    a = Always.new(5)
-    a.start do
-      # nothing
-    end
-    assert(a.to_s.start_with?('5/'))
+    n = 6
+    a = Always.new(6)
+    a.start { sleep(0.01) }
+    sleep(0.1)
+    threads, cycles, errors = a.to_s.split('/')
+    assert_equal(n, threads.to_i)
+    assert(cycles.to_i.positive?)
+    assert(errors.to_i.zero?)
     a.stop
+  end
+
+  def test_stops_correctly
+    a = Always.new(6)
+    a.start { sleep(0.01) }
+    sleep(0.01)
+    a.stop
+    assert_equal('0/0/0', a.to_s)
   end
 
   def test_with_counter
