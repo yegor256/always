@@ -46,4 +46,13 @@ class TestAlways < Minitest::Test
     a.stop
     assert(failures.positive?)
   end
+
+  def test_converts_to_string
+    a = Always.new(5)
+    a.start do
+      # nothing
+    end
+    assert(a.to_s.start_with?('5/'))
+    a.stop
+  end
 end

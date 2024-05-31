@@ -52,6 +52,8 @@ class Always
     @total = total
     @on_error = nil
     @threads = []
+    @cycles = 0
+    @errors = 0
   end
 
   # What to do when an exception occurs?
@@ -80,6 +82,7 @@ class Always
     (0..@total - 1).each do |i|
       @threads[i] = Thread.new do
         body(i, pause)
+        @cycles += 1
       end
     end
   end
@@ -90,6 +93,14 @@ class Always
     @threads = []
   end
 
+  # Represent its internal state as a string.
+  # @return [String] Something like "4/230/23", where 4 is the number of running
+  #  threads, 230 is the number of successfull loops, and 23 is the number
+  #  of failures occured so far.
+  def to_s
+    "#{@threads.size}/#{@cycles}/#{@errors}"
+  end
+
   private
 
   # rubocop:disable Lint/RescueException
@@ -98,6 +109,7 @@ class Always
       begin
         yield
       rescue Exception => e
+        @errors += 1
         @on_error&.call(e, idx)
       end
       sleep(pause)
