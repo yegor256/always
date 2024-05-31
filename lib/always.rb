@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+require 'concurrent/atom'
+
 # Always.
 #
 # In order to start five threads performing the same piece of code
@@ -52,8 +54,8 @@ class Always
     @total = total
     @on_error = nil
     @threads = []
-    @cycles = 0
-    @errors = 0
+    @cycles = Concurrent::Atom.new(0)
+    @errors = Concurrent::Atom.new(0)
   end
 
   # What to do when an exception occurs?
@@ -82,7 +84,7 @@ class Always
     (0..@total - 1).each do |i|
       @threads[i] = Thread.new do
         body(i, pause)
-        @cycles += 1
+        @cycles.swap { |c| c + 1 }
       end
     end
   end
@@ -98,7 +100,7 @@ class Always
   #  threads, 230 is the number of successfull loops, and 23 is the number
   #  of failures occured so far.
   def to_s
-    "#{@threads.size}/#{@cycles}/#{@errors}"
+    "#{@threads.size}/#{@cycles.value}/#{@errors.value}"
   end
 
   private
@@ -109,7 +111,7 @@ class Always
       begin
         yield
       rescue Exception => e
-        @errors += 1
+        @errors.swap { |c| c + 1 }
         @on_error&.call(e, idx)
       end
       sleep(pause)
