@@ -55,4 +55,15 @@ class TestAlways < Minitest::Test
     assert(a.to_s.start_with?('5/'))
     a.stop
   end
+
+  def test_with_counter
+    a = Always.new(1)
+    done = 0
+    a.start do
+      done += 1
+    end
+    sleep(0.1)
+    a.stop
+    assert(done.positive?)
+  end
 end
