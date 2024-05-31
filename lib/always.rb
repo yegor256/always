@@ -26,7 +26,7 @@
 # License:: MIT
 class Always
   # The version of the framework.
-  VERSION = '0.0.0'
+  VERSION = '0.0.1'
 
   # Constructor.
   def initialize(total, pause = 0)
