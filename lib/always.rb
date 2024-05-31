@@ -73,6 +73,8 @@ class Always
   # Start them all.
   # @param [Integer] pause The delay between cycles, in seconds
   def start(pause = 0)
+    raise 'It is running now, call .stop() first' unless @threads.empty?
+
     (0..@total - 1).each do |i|
       @threads[i] = Thread.new do
         body(i, pause)
@@ -83,6 +85,7 @@ class Always
   # Stop them all.
   def stop
     @threads.each(&:terminate)
+    @threads = []
   end
 
   private
