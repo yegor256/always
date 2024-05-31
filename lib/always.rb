@@ -21,6 +21,22 @@
 # SOFTWARE.
 
 # Always.
+#
+# In order to start five threads performing the same piece of code
+# over and over again, with a 60-seconds pause between cycles, do this:
+#
+#  require 'always'
+#  a = Always.new(5, 60)
+#  a.start do
+#    puts 'Hello, world!
+#  end
+#
+# Then, in order stop them all together:
+#
+#  a.stop
+#
+# It's possible to get a quick summary of the thread pool, by calling +to_s+.
+#
 # Author:: Yegor Bugayenko (yegor256@gmail.com)
 # Copyright:: Copyright (c) 2024 Yegor Bugayenko
 # License:: MIT
@@ -29,6 +45,8 @@ class Always
   VERSION = '0.0.0'
 
   # Constructor.
+  # @param [Integer] total The number of threads to run
+  # @param [Integer] pause The delay between cycles, in seconds
   def initialize(total, pause = 0)
     @total = total
     @pause = pause
@@ -37,10 +55,22 @@ class Always
   end
 
   # What to do when an exception occurs?
+  #
+  # Call it like this (the +e+ provided is the exception and +i+ is the
+  # number of the thread where it occured):
+  #
+  #  a = Always.new(5, 60)
+  #  a.on_error do |e, i|
+  #    puts e.message
+  #  end
+  #
+  # If the block that you provided will also throw an error, it will
+  # simply be ignored (not logged anywhere, just ignored!)
   def on_error(&block)
     @on_error = block
   end
 
+  # Start them all.
   def start
     (0..@total - 1).each do |i|
       @threads[i] = Thread.new do
@@ -49,6 +79,7 @@ class Always
     end
   end
 
+  # Stop them all.
   def stop
     @threads.each(&:terminate)
   end

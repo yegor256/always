@@ -35,4 +35,16 @@ class TestAlways < Minitest::Test
     end
     a.stop
   end
+
+  def test_with_error
+    a = Always.new(5)
+    failures = 0
+    a.on_error { |_e, i| failures += i }
+    a.start do
+      raise 'intentionally'
+    end
+    sleep(0.1)
+    a.stop
+    assert(failures.positive?)
+  end
 end
