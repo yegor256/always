@@ -64,8 +64,10 @@ class Always
   #
   # If the block that you provided will also throw an error, it will
   # simply be ignored (not logged anywhere, just ignored!)
+  # @return [Always] Returns itself
   def on_error(&block)
     @on_error = block
+    self
   end
 
   # Start them all.
