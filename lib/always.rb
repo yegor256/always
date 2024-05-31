@@ -26,8 +26,8 @@
 # over and over again, with a 60-seconds pause between cycles, do this:
 #
 #  require 'always'
-#  a = Always.new(5, 60)
-#  a.start do
+#  a = Always.new(5)
+#  a.start(60) do
 #    puts 'Hello, world!
 #  end
 #
@@ -46,10 +46,8 @@ class Always
 
   # Constructor.
   # @param [Integer] total The number of threads to run
-  # @param [Integer] pause The delay between cycles, in seconds
-  def initialize(total, pause = 0)
+  def initialize(total)
     @total = total
-    @pause = pause
     @on_error = nil
     @threads = []
   end
@@ -59,7 +57,7 @@ class Always
   # Call it like this (the +e+ provided is the exception and +i+ is the
   # number of the thread where it occured):
   #
-  #  a = Always.new(5, 60)
+  #  a = Always.new(5)
   #  a.on_error do |e, i|
   #    puts e.message
   #  end
@@ -71,10 +69,11 @@ class Always
   end
 
   # Start them all.
-  def start
+  # @param [Integer] pause The delay between cycles, in seconds
+  def start(pause = 0)
     (0..@total - 1).each do |i|
       @threads[i] = Thread.new do
-        body(i)
+        body(i, pause)
       end
     end
   end
@@ -87,14 +86,14 @@ class Always
   private
 
   # rubocop:disable Lint/RescueException
-  def body(idx)
+  def body(idx, pause)
     loop do
       begin
         yield
       rescue Exception => e
         @on_error&.call(e, idx)
       end
-      sleep(@pause)
+      sleep(pause)
     rescue Exception
       # If we reach this point, we must not even try to
       # do anything. Here we must quietly ignore everything
