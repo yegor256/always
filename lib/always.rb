@@ -25,5 +25,50 @@
 # Copyright:: Copyright (c) 2024 Yegor Bugayenko
 # License:: MIT
 class Always
+  # The version of the framework.
   VERSION = '0.0.0'
+
+  # Constructor.
+  def initialize(total, pause = 0)
+    @total = total
+    @pause = pause
+    @on_error = nil
+    @threads = []
+  end
+
+  # What to do when an exception occurs?
+  def on_error(&block)
+    @on_error = block
+  end
+
+  def start
+    (0..@total - 1).each do |i|
+      @threads[i] = Thread.new do
+        body(i)
+      end
+    end
+  end
+
+  def stop
+    @threads.each(&:terminate)
+  end
+
+  private
+
+  # rubocop:disable Lint/RescueException
+  def body(idx)
+    loop do
+      begin
+        yield
+      rescue Exception => e
+        @on_error&.call(e, idx)
+      end
+      sleep(@pause)
+    rescue Exception
+      # If we reach this point, we must not even try to
+      # do anything. Here we must quietly ignore everything
+      # and let the daemon go to the next cycle.
+    end
+  end
+  # rubocop:enable Lint/RescueException
 end

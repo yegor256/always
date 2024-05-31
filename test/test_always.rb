@@ -29,6 +29,10 @@ require_relative '../lib/always'
 # License:: MIT
 class TestAlways < Minitest::Test
   def test_simple
-    # ...
+    a = Always.new(3)
+    a.start do
+      raise 'intentionally'
+    end
+    a.stop
   end
 end

@@ -33,7 +33,7 @@ def version
   Gem::Specification.load(Dir['*.gemspec'].first).version
 end
 
-task default: %i[clean test features rubocop yard copyright]
+task default: %i[clean test rubocop yard copyright]
 
 require 'rake/testtask'
 desc 'Run all unit tests'
@@ -43,14 +43,6 @@ Rake::TestTask.new(:test) do |test|
   test.pattern = 'test/**/test_*.rb'
   test.warning = true
   test.verbose = false
-end
-
-require 'cucumber/rake/task'
-Cucumber::Rake::Task.new(:features) do
-  Rake::Cleaner.cleanup_files(['coverage'])
-end
-Cucumber::Rake::Task.new(:'features:html') do |t|
-  t.profile = 'html_report'
 end
 
 require 'yard'

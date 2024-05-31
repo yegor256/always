@@ -14,10 +14,15 @@
 This simple Ruby gem helps you run a loop forever, in a background thread.
 
 ```ruby
-# Start five threads with 30-seconds delay between loop cycles
-Always.start(5, 30) do
+require 'always'
+# Prepare, with five threads and 30-seconds delay between loop cycles:
+a = Always.new(5, 30)
+# Start them all together spinning forever:
+a.start do
   puts "I'm alive"
 end
+# Stop them all together:
+a.stop
 ```
 
 ## How to contribute

@@ -28,9 +28,11 @@ Gem::Specification.new do |s|
   s.name = 'always'
   s.version = '0.0.0'
   s.license = 'MIT'
-  s.summary = '...'
+  s.summary = 'A simple Ruby framework that spins a loop forever, in a background thread'
   s.description =
-    '...'
+    'You may need this framework if you have a routine task ' \
+    'that must be performed every once in a while, but may raise exceptions ' \
+    'which you don\'t want to cause a termination of the entire routine cycle.'
   s.authors = ['Yegor Bugayenko']
   s.email = 'yegor256@gmail.com'
   s.homepage = 'http://github.com/yegor256/always'
@@ -38,8 +40,5 @@ Gem::Specification.new do |s|
   s.executables = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
   s.rdoc_options = ['--charset=UTF-8']
   s.extra_rdoc_files = ['README.md', 'LICENSE.txt']
-  s.add_runtime_dependency 'backtrace', '~> 0.3'
-  s.add_runtime_dependency 'concurrent-ruby', '1.2.3'
-  s.add_runtime_dependency 'loog', '~>0.2'
   s.metadata['rubygems_mfa_required'] = 'true'
 end
