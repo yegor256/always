@@ -74,6 +74,7 @@ GEM
     drb (2.2.1)
     erubi (1.12.0)
     ffi (1.16.3)
+    ffi (1.16.3-x64-mingw-ucrt)
     hashdiff (1.1.0)
     i18n (1.14.5)
       concurrent-ruby (~> 1.0)
@@ -96,6 +97,8 @@ GEM
     nokogiri (1.16.5-arm-linux)
       racc (~> 1.4)
     nokogiri (1.16.5-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.16.5-x64-mingw-ucrt)
       racc (~> 1.4)
     nokogiri (1.16.5-x86-linux)
       racc (~> 1.4)
@@ -217,6 +220,7 @@ PLATFORMS
   aarch64-linux
   arm-linux
   arm64-darwin
+  x64-mingw-ucrt
   x86-linux
   x86_64-darwin
   x86_64-linux
