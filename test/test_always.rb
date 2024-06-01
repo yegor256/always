@@ -80,12 +80,14 @@ class TestAlways < Minitest::Test
 
   def test_with_broken_syntax
     a = Always.new(1)
-    a.start do
+    failures = 0
+    a.on_error { |_e| failures += 1 }.start do
       eval('broken$ruby$syntax')
     end
     sleep(0.1)
     _, _, errors = a.to_s.split('/')
     assert(!errors.to_i.zero?)
+    assert(!failures.zero?)
     a.stop
   end
 end
