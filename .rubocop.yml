@@ -30,3 +30,5 @@ AllCops:
 
 Layout/EndOfLine:
   EnforcedStyle: lf
+Style/EvalWithLocation:
+  Enabled: false
