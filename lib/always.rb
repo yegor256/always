@@ -79,7 +79,7 @@ class Always
     self
   end
 
-  # Start them all.
+  # Start them all and let them run forever (until the +stop+ method is called).
   # @param [Integer] pause The delay between cycles, in seconds
   def start(pause = 0, &)
     raise 'It is running now, call .stop() first' unless @threads.empty?
