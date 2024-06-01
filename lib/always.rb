@@ -33,11 +33,14 @@ require 'concurrent/atom'
 #    puts 'Hello, world!
 #  end
 #
-# Then, in order stop them all together:
+# Then, in order to stop them all together:
 #
 #  a.stop
 #
 # It's possible to get a quick summary of the thread pool, by calling +to_s+.
+# The result will be a +"T/C/E"+ string, where +T+ is the total number of
+# currently running threads, +C+ is the total number of all cycles
+# so far, and +E+ is the total number of all errors seen so far.
 #
 # Author:: Yegor Bugayenko (yegor256@gmail.com)
 # Copyright:: Copyright (c) 2024 Yegor Bugayenko
