@@ -47,6 +47,19 @@ class TestAlways < Minitest::Test
     assert(failures.positive?)
   end
 
+  def test_read_backtraces
+    max = 5
+    a = Always.new(5, max_backtraces: max)
+    failures = 0
+    a.on_error { |_e| failures += 1 }.start do
+      raise 'intentionally'
+    end
+    sleep(0.1)
+    a.stop
+    assert(failures.positive?)
+    assert_equal(max, a.backtraces.size)
+  end
+
   def test_converts_to_string
     n = 6
     a = Always.new(6)

@@ -46,19 +46,24 @@ require 'concurrent/atom'
 # Copyright:: Copyright (c) 2024 Yegor Bugayenko
 # License:: MIT
 class Always
+  attr_reader :backtraces
+
   # The version of the framework.
   VERSION = '0.0.0'
 
   # Constructor.
   # @param [Integer] total The number of threads to run
-  def initialize(total)
+  # @param [Integer] max_backtraces How many backtraces to keep in memory?
+  def initialize(total, max_backtraces: 32)
     raise "The number of threads (#{total}) must be positive" unless total.positive?
 
     @total = total
     @on_error = nil
     @threads = []
+    @backtraces = []
     @cycles = Concurrent::Atom.new(0)
     @errors = Concurrent::Atom.new(0)
+    @max_backtraces = max_backtraces
   end
 
   # What to do when an exception occurs?
@@ -133,6 +138,8 @@ class Always
     yield
   rescue Exception => e
     @errors.swap { |c| c + 1 }
+    @backtraces << e
+    @backtraces.shift if @backtraces.size > @max_backtraces
     @on_error&.call(e)
   end
   # rubocop:enable Lint/RescueException
