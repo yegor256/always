@@ -25,6 +25,18 @@ end
 a.stop
 ```
 
+You may be interested to get the backtraces of the exceptions that
+happened most recently:
+
+```ruby
+# Keep the last 10 error backtraces in memory:
+a = Always.new(5, max_backtraces: 10)
+# Retrieve them:
+p a.backtraces
+```
+
+That's it.
+
 ## How to contribute
 
 Read
