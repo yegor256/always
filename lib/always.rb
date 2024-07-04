@@ -49,7 +49,7 @@ class Always
   attr_reader :backtraces
 
   # The version of the framework.
-  VERSION = '0.0.0'
+  VERSION = '0.0.5'
 
   # Constructor.
   # @param [Integer] total The number of threads to run
