@@ -163,7 +163,7 @@ GEM
     unicode-display_width (2.5.0)
     useragent (0.16.10)
     webrick (1.8.1)
-    yard (0.9.36)
+    yard (0.9.37)
     zeitwerk (2.6.18)
 
 PLATFORMS
@@ -184,7 +184,7 @@ DEPENDENCIES
   rubocop-rspec (= 3.0.4)
   simplecov (= 0.22.0)
   simplecov-cobertura (= 2.1.0)
-  yard (= 0.9.36)
+  yard (= 0.9.37)
 
 BUNDLED WITH
    2.5.6
