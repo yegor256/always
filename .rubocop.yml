@@ -27,8 +27,11 @@ AllCops:
   TargetRubyVersion: 3.2
   SuggestExtensions: false
   NewCops: enable
-
 Layout/EndOfLine:
   EnforcedStyle: lf
 Style/EvalWithLocation:
   Enabled: false
+required:
+  - rubocop-rake
+  - rubocop-minitest
+  - rubocop-performance
