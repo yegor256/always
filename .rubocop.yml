@@ -31,7 +31,7 @@ Layout/EndOfLine:
   EnforcedStyle: lf
 Style/EvalWithLocation:
   Enabled: false
-required:
+require:
   - rubocop-rake
   - rubocop-minitest
   - rubocop-performance
