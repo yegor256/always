@@ -1,13 +1,13 @@
 # Runs a Background Loop Forever
 
-[![DevOps By Rultor.com](http://www.rultor.com/b/yegor256/always)](http://www.rultor.com/p/yegor256/always)
+[![DevOps By Rultor.com](https://www.rultor.com/b/yegor256/always)](https://www.rultor.com/p/yegor256/always)
 [![We recommend RubyMine](https://www.elegantobjects.org/rubymine.svg)](https://www.jetbrains.com/ruby/)
 
 [![rake](https://github.com/yegor256/always/actions/workflows/rake.yml/badge.svg)](https://github.com/yegor256/always/actions/workflows/rake.yml)
-[![PDD status](http://www.0pdd.com/svg?name=yegor256/always)](http://www.0pdd.com/p?name=yegor256/always)
-[![Gem Version](https://badge.fury.io/rb/always.svg)](http://badge.fury.io/rb/always)
+[![PDD status](https://www.0pdd.com/svg?name=yegor256/always)](https://www.0pdd.com/p?name=yegor256/always)
+[![Gem Version](https://badge.fury.io/rb/always.svg)](https://badge.fury.io/rb/always)
 [![Test Coverage](https://img.shields.io/codecov/c/github/yegor256/always.svg)](https://codecov.io/github/yegor256/always?branch=master)
-[![Yard Docs](http://img.shields.io/badge/yard-docs-blue.svg)](http://rubydoc.info/github/yegor256/always/master/frames)
+[![Yard Docs](https://img.shields.io/badge/yard-docs-blue.svg)](https://rubydoc.info/github/yegor256/always/master/frames)
 [![Hits-of-Code](https://hitsofcode.com/github/yegor256/always)](https://hitsofcode.com/view/github/yegor256/always)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://github.com/yegor256/always/blob/master/LICENSE.txt)
 
