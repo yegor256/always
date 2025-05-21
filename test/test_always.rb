@@ -3,8 +3,8 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024-2025 Yegor Bugayenko
 # SPDX-License-Identifier: MIT
 
-require 'minitest/autorun'
 require_relative '../lib/always'
+require_relative 'test__helper'
 
 # Test.
 # Author:: Yegor Bugayenko (yegor256@gmail.com)
@@ -27,7 +27,7 @@ class TestAlways < Minitest::Test
     end
     sleep(0.1)
     a.stop
-    assert(failures.positive?)
+    assert_predicate(failures, :positive?)
   end
 
   def test_read_backtraces
@@ -39,7 +39,7 @@ class TestAlways < Minitest::Test
     end
     sleep(0.1)
     a.stop
-    assert(failures.positive?)
+    assert_predicate(failures, :positive?)
     assert_equal(max, a.backtraces.size)
   end
 
@@ -50,8 +50,8 @@ class TestAlways < Minitest::Test
     sleep(0.1)
     threads, cycles, errors = a.to_s.split('/')
     assert_equal(n, threads.to_i)
-    assert(cycles.to_i.positive?)
-    assert(errors.to_i.zero?)
+    assert_predicate(cycles.to_i, :positive?)
+    assert_predicate(errors.to_i, :zero?)
     a.stop
   end
 
@@ -71,7 +71,7 @@ class TestAlways < Minitest::Test
     end
     sleep(0.1)
     a.stop
-    assert(done.positive?)
+    assert_predicate(done, :positive?)
   end
 
   def test_with_broken_syntax
@@ -82,8 +82,8 @@ class TestAlways < Minitest::Test
     end
     sleep(0.1)
     _, _, errors = a.to_s.split('/')
-    assert(!errors.to_i.zero?)
-    assert(!failures.zero?)
+    refute_predicate(errors.to_i, :zero?)
+    refute_predicate(failures, :zero?)
     a.stop
   end
 end

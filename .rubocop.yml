@@ -10,11 +10,13 @@ AllCops:
   TargetRubyVersion: 3.2
   SuggestExtensions: false
   NewCops: enable
+plugins:
+  - rubocop-rake
+  - rubocop-minitest
+  - rubocop-performance
+Minitest/EmptyLineBeforeAssertionMethods:
+  Enabled: false
 Layout/EndOfLine:
   EnforcedStyle: lf
 Style/EvalWithLocation:
   Enabled: false
-require:
-  - rubocop-rake
-  - rubocop-minitest
-  - rubocop-performance
