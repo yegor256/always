@@ -3,6 +3,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024-2025 Yegor Bugayenko
 # SPDX-License-Identifier: MIT
 
+require 'concurrent/set'
 require_relative '../lib/always'
 require_relative 'test__helper'
 
@@ -17,6 +18,21 @@ class TestAlways < Minitest::Test
       raise 'intentionally'
     end
     a.stop
+  end
+
+  def test_threads_have_names
+    names = Concurrent::Set.new
+    total = 3
+    a = Always.new(total, name: 'foo').on_error { |e| puts e }
+    a.start do
+      names.add(Thread.current.name)
+    end
+    sleep(0.1)
+    a.stop
+    assert_equal(total, names.size)
+    total.times do |i|
+      assert_includes(names, "foo-#{i + 1}")
+    end
   end
 
   def test_with_error

@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: MIT
 
 require 'concurrent/atom'
+require 'securerandom'
 
 # Always.
 #
@@ -44,11 +45,12 @@ class Always
   # Constructor.
   # @param [Integer] total The number of threads to run
   # @param [Integer] max_backtraces How many backtraces to keep in memory?
-  def initialize(total, max_backtraces: 32)
+  def initialize(total, max_backtraces: 32, name: "always-#{SecureRandom.hex(4)}")
     raise "The number of threads (#{total}) must be positive" unless total.positive?
 
     @total = total
     @on_error = nil
+    @name = name
     @threads = []
     @backtraces = []
     @cycles = Concurrent::Atom.new(0)
@@ -80,9 +82,12 @@ class Always
     raise 'It is running now, call .stop() first' unless @threads.empty?
 
     (0..@total - 1).each do |i|
-      @threads[i] = Thread.new do
-        body(pause, &)
-      end
+      t =
+        Thread.new do
+          body(pause, &)
+        end
+      t.name = "#{@name}-#{i + 1}"
+      @threads[i] = t
     end
   end
 
