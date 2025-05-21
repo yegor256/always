@@ -18,7 +18,7 @@ require 'always'
 # Prepare, with five threads:
 a = Always.new(5)
 # Start them all together spinning forever with 30-seconds delay between cycles:
-a.start do
+a.start(30) do
   puts "I'm alive"
 end
 # Stop them all together:
@@ -31,7 +31,11 @@ happened most recently:
 ```ruby
 # Keep the last 10 error backtraces in memory:
 a = Always.new(5, max_backtraces: 10)
-# Retrieve them:
+# Set an error handler:
+a.on_error do |exception, thread_id|
+  puts "Error in thread #{thread_id}: #{exception.message}"
+end
+# Retrieve the backtraces:
 p a.backtraces
 ```
 

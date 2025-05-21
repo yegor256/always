@@ -13,7 +13,7 @@ require 'concurrent/atom'
 #  require 'always'
 #  a = Always.new(5)
 #  a.start(60) do
-#    puts 'Hello, world!
+#    puts 'Hello, world!'
 #  end
 #
 # Then, in order to stop them all together:
@@ -29,6 +29,13 @@ require 'concurrent/atom'
 # Copyright:: Copyright (c) 2024-2025 Yegor Bugayenko
 # License:: MIT
 class Always
+  # Get the array of most recent exception backtraces.
+  # @return [Array<Exception>] The array of exceptions caught
+  # @example
+  #  a = Always.new(5, max_backtraces: 10)
+  #  a.start { raise 'Oops' }
+  #  sleep 1
+  #  puts a.backtraces.size # => number of exceptions caught
   attr_reader :backtraces
 
   # The version of the framework.
@@ -52,7 +59,7 @@ class Always
   # What to do when an exception occurs?
   #
   # Call it like this (the +e+ provided is the exception and +i+ is the
-  # number of the thread where it occured):
+  # number of the thread where it occurred):
   #
   #  a = Always.new(5)
   #  a.on_error do |e, i|
@@ -94,8 +101,12 @@ class Always
 
   # Represent its internal state as a string.
   # @return [String] Something like "4/230/23", where 4 is the number of running
-  #  threads, 230 is the number of successfull loops, and 23 is the number
-  #  of failures occured so far.
+  #  threads, 230 is the number of successful loops, and 23 is the number
+  #  of failures occurred so far.
+  # @example
+  #  a = Always.new(5)
+  #  a.start(60) { puts 'Working...' }
+  #  puts a.to_s # => "5/42/3"
   def to_s
     "#{@threads.size}/#{@cycles.value}/#{@errors.value}"
   end
@@ -123,7 +134,7 @@ class Always
     @errors.swap { |c| c + 1 }
     @backtraces << e
     @backtraces.shift if @backtraces.size > @max_backtraces
-    @on_error&.call(e)
+    @on_error&.call(e, Thread.current.object_id)
   end
   # rubocop:enable Lint/RescueException
 end
