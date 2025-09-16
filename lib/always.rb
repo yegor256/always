@@ -81,7 +81,7 @@ class Always
   def start(pause = 0, &)
     raise 'It is running now, call .stop() first' unless @threads.empty?
 
-    (0..@total - 1).each do |i|
+    (0..(@total - 1)).each do |i|
       t =
         Thread.new do
           body(pause, &)
