@@ -12,14 +12,14 @@ require 'securerandom'
 # over and over again, with a 60-seconds pause between cycles, do this:
 #
 #  require 'always'
-#  a = Always.new(5)
-#  a.start(60) do
+#  a = Always.new(5) do
 #    puts 'Hello, world!'
 #  end
+#  a.start!(60)
 #
 # Then, in order to stop them all together:
 #
-#  a.stop
+#  a.stop!
 #
 # It's possible to get a quick summary of the thread pool, by calling +to_s+.
 # The result will be a +"T/C/E"+ string, where +T+ is the total number of
@@ -45,10 +45,12 @@ class Always
   # Constructor.
   # @param [Integer] total The number of threads to run
   # @param [Integer] max_backtraces How many backtraces to keep in memory?
-  def initialize(total, max_backtraces: 32, name: "always-#{SecureRandom.hex(4)}")
+  # @param [Block] block The block to execute
+  def initialize(total, max_backtraces: 32, name: "always-#{SecureRandom.hex(4)}", &block)
     raise "The number of threads (#{total}) must be positive" unless total.positive?
 
     @total = total
+    @block = block
     @on_error = nil
     @name = name
     @threads = []
@@ -78,13 +80,13 @@ class Always
 
   # Start them all and let them run forever (until the +stop+ method is called).
   # @param [Integer] pause The delay between cycles, in seconds
-  def start(pause = 0, &)
+  def start!(pause = 0)
     raise 'It is running now, call .stop() first' unless @threads.empty?
 
     (0..(@total - 1)).each do |i|
       t =
         Thread.new do
-          body(pause, &)
+          body(pause)
         end
       t.name = "#{@name}-#{i + 1}"
       @threads[i] = t
@@ -92,7 +94,7 @@ class Always
   end
 
   # Stop them all.
-  def stop
+  def stop!
     raise 'It is not running now, call .start() first' if @threads.empty?
 
     @threads.delete_if do |t|
@@ -119,9 +121,9 @@ class Always
   private
 
   # rubocop:disable Lint/RescueException
-  def body(pause, &)
+  def body(pause)
     loop do
-      one(&)
+      one
       @cycles.swap { |c| c + 1 }
       sleep(pause) unless pause.zero?
     rescue Exception
@@ -134,7 +136,7 @@ class Always
 
   # rubocop:disable Lint/RescueException
   def one
-    yield
+    @block.call
   rescue Exception => e
     @errors.swap { |c| c + 1 }
     @backtraces << e
