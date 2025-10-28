@@ -15,14 +15,14 @@ This simple Ruby gem helps you run a loop forever, in a background thread.
 
 ```ruby
 require 'always'
-# Prepare, with five threads:
-a = Always.new(5)
-# Start them all together spinning forever with 30-seconds delay between cycles:
-a.start(30) do
+# Prepare, with five threads and a block:
+a = Always.new(5) do
   puts "I'm alive"
 end
+# Start them all together spinning forever with 30-seconds delay between cycles:
+a.start!(30)
 # Stop them all together:
-a.stop
+a.stop!
 ```
 
 You may be interested to get the backtraces of the exceptions that
@@ -35,6 +35,8 @@ a = Always.new(5, max_backtraces: 10)
 a.on_error do |exception, thread_id|
   puts "Error in thread #{thread_id}: #{exception.message}"
 end
+# Start them:
+a.start!
 # Retrieve the backtraces:
 p a.backtraces
 ```
