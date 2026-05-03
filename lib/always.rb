@@ -9,7 +9,7 @@ require 'securerandom'
 # Always.
 #
 # In order to start five threads performing the same piece of code
-# over and over again, with a 60-seconds pause between cycles, do this:
+# over and over again, with a 60-second pause between cycles, do this:
 #
 #  require 'always'
 #  a = Always.new(5) do
@@ -109,7 +109,7 @@ class Always
   # Represent its internal state as a string.
   # @return [String] Something like "4/230/23", where 4 is the number of running
   #  threads, 230 is the number of successful loops, and 23 is the number
-  #  of failures occurred so far.
+  #  of failures that occurred so far.
   # @example
   #  a = Always.new(5)
   #  a.start(60) { puts 'Working...' }

@@ -19,7 +19,7 @@ require 'always'
 a = Always.new(5) do
   puts "I'm alive"
 end
-# Start them all together spinning forever with 30-seconds delay between cycles:
+# Start them all together spinning forever with a 30-second delay between cycles:
 a.start!(30)
 # Stop them all together:
 a.stop!
