@@ -13,9 +13,10 @@ require_relative 'test__helper'
 # License:: MIT
 class TestAlways < Minitest::Test
   def test_simple
-    a = Always.new(3) do
-      raise 'intentionally'
-    end
+    a =
+      Always.new(3) do
+        raise(StandardError, 'intentionally')
+      end
     a.start!
     a.stop!
   end
@@ -27,7 +28,7 @@ class TestAlways < Minitest::Test
       Always.new(total, name: 'foo') do
         names.add(Thread.current.name)
       end
-    a.on_error { |e| puts e }
+    a.on_error { |e| puts(e) }
     a.start!
     sleep(0.1)
     a.stop!
@@ -40,7 +41,7 @@ class TestAlways < Minitest::Test
   def test_with_error
     a =
       Always.new(5) do
-        raise 'intentionally'
+        raise(StandardError, 'intentionally')
       end
     failures = 0
     a.on_error { |_e| failures += 1 }
@@ -54,7 +55,7 @@ class TestAlways < Minitest::Test
     max = 5
     a =
       Always.new(5, max_backtraces: max) do
-        raise 'intentionally'
+        raise(StandardError, 'intentionally')
       end
     failures = 0
     a.on_error { |_e| failures += 1 }.start!
@@ -65,14 +66,13 @@ class TestAlways < Minitest::Test
   end
 
   def test_converts_to_string
-    n = 6
     a = Always.new(6) { sleep(0.01) }
     a.start!
     sleep(0.1)
     threads, cycles, errors = a.to_s.split('/')
-    assert_equal(n, threads.to_i)
-    assert_predicate(cycles.to_i, :positive?)
-    assert_predicate(errors.to_i, :zero?)
+    assert_equal(6, Integer(threads, 10))
+    assert_predicate(Integer(cycles, 10), :positive?)
+    assert_predicate(Integer(errors, 10), :zero?)
     a.stop!
   end
 
@@ -105,7 +105,7 @@ class TestAlways < Minitest::Test
     a.on_error { |_e| failures += 1 }.start!
     sleep(0.1)
     _, _, errors = a.to_s.split('/')
-    refute_predicate(errors.to_i, :zero?)
+    refute_predicate(Integer(errors, 10), :zero?)
     refute_predicate(failures, :zero?)
     a.stop!
   end

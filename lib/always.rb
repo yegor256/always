@@ -30,16 +30,8 @@ require 'securerandom'
 # Copyright:: Copyright (c) 2024-2026 Yegor Bugayenko
 # License:: MIT
 class Always
-  # Get the array of most recent exception backtraces.
-  # @return [Array<Exception>] The array of exceptions caught
-  # @example
-  #  a = Always.new(5, max_backtraces: 10)
-  #  a.start { raise 'Oops' }
-  #  sleep 1
-  #  puts a.backtraces.size # => number of exceptions caught
   attr_reader :backtraces
 
-  # The version of the framework.
   VERSION = '0.0.0'
 
   # Constructor.
@@ -47,8 +39,7 @@ class Always
   # @param [Integer] max_backtraces How many backtraces to keep in memory?
   # @param [Block] block The block to execute
   def initialize(total, max_backtraces: 32, name: "always-#{SecureRandom.hex(4)}", &block)
-    raise "The number of threads (#{total}) must be positive" unless total.positive?
-
+    raise(ArgumentError, "The number of threads (#{total}) must be positive") unless total.positive?
     @total = total
     @block = block
     @on_error = nil
@@ -81,8 +72,7 @@ class Always
   # Start them all and let them run forever (until the +stop+ method is called).
   # @param [Integer] pause The delay between cycles, in seconds
   def start!(pause = 0)
-    raise 'It is running now, call .stop() first' unless @threads.empty?
-
+    raise(StandardError, 'It is running now, call .stop() first') unless @threads.empty?
     (0..(@total - 1)).each do |i|
       t =
         Thread.new do
@@ -95,8 +85,7 @@ class Always
 
   # Stop them all.
   def stop!
-    raise 'It is not running now, call .start() first' if @threads.empty?
-
+    raise(StandardError, 'It is not running now, call .start() first') if @threads.empty?
     @threads.delete_if do |t|
       t.kill
       sleep(0.001) while t.alive?
@@ -127,9 +116,7 @@ class Always
       @cycles.swap { |c| c + 1 }
       sleep(pause) unless pause.zero?
     rescue Exception
-      # If we reach this point, we must not even try to
-      # do anything. Here we must quietly ignore everything
-      # and let the daemon go to the next cycle.
+      nil
     end
   end
   # rubocop:enable Lint/RescueException
