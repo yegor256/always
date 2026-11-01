@@ -109,7 +109,7 @@ class Always
 
   private
 
-  # rubocop:disable Lint/RescueException
+  # rubocop:disable-next Lint/RescueException
   def body(pause)
     loop do
       one
@@ -119,9 +119,8 @@ class Always
       nil
     end
   end
-  # rubocop:enable Lint/RescueException
 
-  # rubocop:disable Lint/RescueException
+  # rubocop:disable-next Lint/RescueException
   def one
     @block.call
   rescue Exception => e
@@ -130,5 +129,4 @@ class Always
     @backtraces.shift if @backtraces.size > @max_backtraces
     @on_error&.call(e, Thread.current.object_id)
   end
-  # rubocop:enable Lint/RescueException
 end
