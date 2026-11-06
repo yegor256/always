@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024-2026 Yegor Bugayenko
 # SPDX-License-Identifier: MIT
 
-require 'concurrent/set'
+require 'timeout'
 require_relative '../lib/always'
 require_relative 'test__helper'
 
@@ -22,20 +22,24 @@ class TestAlways < Minitest::Test
   end
 
   def test_threads_have_names
-    names = Concurrent::Set.new
+    gate = Queue.new
+    names = Queue.new
     total = 3
     a =
       Always.new(total, name: 'foo') do
-        names.add(Thread.current.name)
+        gate.pop
+        names << Thread.current.name
+        Thread.stop
       end
-    a.on_error { |e| puts(e) }
     a.start!
-    sleep(0.1)
-    a.stop!
-    assert_equal(total, names.size)
+    total.times { gate << true }
+    actual = Timeout.timeout(10) { Array.new(total) { names.pop } }
+    assert_equal(total, actual.uniq.size)
     total.times do |i|
-      assert_includes(names, "foo-#{i + 1}")
+      assert_includes(actual, "foo-#{i + 1}")
     end
+  ensure
+    a.stop!
   end
 
   def test_with_error
@@ -49,6 +53,24 @@ class TestAlways < Minitest::Test
     sleep(0.1)
     a.stop!
     assert_predicate(failures, :positive?)
+  end
+
+  def test_with_failing_handler
+    a = Always.new(1) { raise(StandardError, 'task failed') }
+    failures = 0
+    a.on_error do
+      failures += 1
+      raise(StandardError, 'handler failed') if failures == 1
+    end
+    pauses = []
+    a.define_singleton_method(:sleep) do |pause|
+      pauses << pause
+      throw(:finished)
+    end
+    catch(:finished) { a.__send__(:body, 60) }
+    assert_equal(1, failures)
+    assert_equal([60], pauses)
+    assert_equal('0/1/1', a.to_s)
   end
 
   def test_read_backtraces
