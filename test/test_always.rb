@@ -51,6 +51,24 @@ class TestAlways < Minitest::Test
     assert_predicate(failures, :positive?)
   end
 
+  def test_with_failing_handler
+    a = Always.new(1) { raise(StandardError, 'task failed') }
+    failures = 0
+    a.on_error do
+      failures += 1
+      raise(StandardError, 'handler failed') if failures == 1
+    end
+    pauses = []
+    a.define_singleton_method(:sleep) do |pause|
+      pauses << pause
+      throw(:finished)
+    end
+    catch(:finished) { a.__send__(:body, 60) }
+    assert_equal(1, failures)
+    assert_equal([60], pauses)
+    assert_equal('0/1/1', a.to_s)
+  end
+
   def test_read_backtraces
     max = 5
     a =

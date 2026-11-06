@@ -127,6 +127,10 @@ class Always
     @errors.swap { |c| c + 1 }
     @backtraces << e
     @backtraces.shift if @backtraces.size > @max_backtraces
-    @on_error&.call(e, Thread.current.object_id)
+    begin
+      @on_error&.call(e, Thread.current.object_id)
+    rescue Exception
+      nil
+    end
   end
 end
