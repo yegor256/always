@@ -3,7 +3,7 @@
 # SPDX-FileCopyrightText: Copyright (c) 2024-2026 Yegor Bugayenko
 # SPDX-License-Identifier: MIT
 
-require 'concurrent/set'
+require 'timeout'
 require_relative '../lib/always'
 require_relative 'test__helper'
 
@@ -22,20 +22,24 @@ class TestAlways < Minitest::Test
   end
 
   def test_threads_have_names
-    names = Concurrent::Set.new
+    gate = Queue.new
+    names = Queue.new
     total = 3
     a =
       Always.new(total, name: 'foo') do
-        names.add(Thread.current.name)
+        gate.pop
+        names << Thread.current.name
+        Thread.stop
       end
-    a.on_error { |e| puts(e) }
     a.start!
-    sleep(0.1)
-    a.stop!
-    assert_equal(total, names.size)
+    total.times { gate << true }
+    actual = Timeout.timeout(10) { Array.new(total) { names.pop } }
+    assert_equal(total, actual.uniq.size)
     total.times do |i|
-      assert_includes(names, "foo-#{i + 1}")
+      assert_includes(actual, "foo-#{i + 1}")
     end
+  ensure
+    a.stop!
   end
 
   def test_with_error
