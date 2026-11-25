@@ -42,6 +42,24 @@ class TestAlways < Minitest::Test
     a.stop!
   end
 
+  def test_on_error_receives_thread_number
+    total = 3
+    numbers = Queue.new
+    a =
+      Always.new(total, name: 'foo') do
+        raise(StandardError, 'intentionally')
+      end
+    a.on_error { |_e, idx| numbers << idx }
+    a.start!
+    seen = {}
+    Timeout.timeout(10) do
+      seen[numbers.pop] = true until seen.size == total
+    end
+    assert_equal((1..total).to_a, seen.keys.sort)
+  ensure
+    a.stop!
+  end
+
   def test_with_error
     a =
       Always.new(5) do
