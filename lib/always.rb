@@ -76,7 +76,7 @@ class Always
     (0..(@total - 1)).each do |i|
       t =
         Thread.new do
-          body(pause)
+          body(pause, i)
         end
       t.name = "#{@name}-#{i + 1}"
       @threads[i] = t
@@ -110,9 +110,9 @@ class Always
   private
 
   # rubocop:disable-next Lint/RescueException
-  def body(pause)
+  def body(pause, idx = 0)
     loop do
-      one
+      one(idx)
       @cycles.swap { |c| c + 1 }
       sleep(pause) unless pause.zero?
     rescue Exception
@@ -121,14 +121,14 @@ class Always
   end
 
   # rubocop:disable-next Lint/RescueException
-  def one
+  def one(idx = 0)
     @block.call
   rescue Exception => e
     @errors.swap { |c| c + 1 }
     @backtraces << e
     @backtraces.shift if @backtraces.size > @max_backtraces
     begin
-      @on_error&.call(e, Thread.current.object_id)
+      @on_error&.call(e, idx + 1)
     rescue Exception
       nil
     end
